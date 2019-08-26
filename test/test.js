@@ -129,6 +129,21 @@ describe('csurf', function () {
       })
   })
 
+  it('should succeed with an invalid token if ignoreCsrfToken is true', function (done) {
+    var server = createServer({ ignoreCsrfToken: true })
+
+    request(server)
+      .get('/')
+      .expect(200, function (err, res) {
+        if (err) return done(err)
+        request(server)
+          .post('/')
+          .set('Cookie', cookies(res))
+          .set('X-CSRF-Token', '42')
+          .expect(200, done)
+      })
+  })
+
   it('should fail with no token', function (done) {
     var server = createServer()
 
@@ -140,6 +155,20 @@ describe('csurf', function () {
           .post('/')
           .set('Cookie', cookies(res))
           .expect(403, done)
+      })
+  })
+
+  it('should succeed with no token if ignoreCsrfToken is true', function (done) {
+    var server = createServer({ ignoreCsrfToken: true })
+
+    request(server)
+      .get('/')
+      .expect(200, function (err, res) {
+        if (err) return done(err)
+        request(server)
+          .post('/')
+          .set('Cookie', cookies(res))
+          .expect(200, done)
       })
   })
 
@@ -493,6 +522,9 @@ function createServer (opts) {
 
   app.use(function (req, res, next) {
     var index = req.url.indexOf('?') + 1
+    if (opts && opts.ignoreCsrfToken) {
+      req.ignoreCsrfToken = true;
+    }
 
     if (index) {
       req.query = querystring.parse(req.url.substring(index))

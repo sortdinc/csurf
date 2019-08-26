@@ -107,8 +107,8 @@ function csurf (options) {
       setSecret(req, res, sessionKey, secret, cookie)
     }
 
-    // verify the incoming token
-    if (!ignoreMethod[req.method] && !tokens.verify(secret, value(req))) {
+	// verify the incoming token
+    if (!ignoreMethod[req.method] && !req.ignoreCsrfToken && !tokens.verify(secret, value(req))) {
       return next(createError(403, 'invalid csrf token', {
         code: 'EBADCSRFTOKEN'
       }))
