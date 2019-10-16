@@ -523,7 +523,7 @@ function createServer (opts) {
   app.use(function (req, res, next) {
     var index = req.url.indexOf('?') + 1
     if (opts && opts.ignoreCsrfToken) {
-      req.ignoreCsrfToken = true;
+      req.ignoreCsrfToken = true
     }
 
     if (index) {
